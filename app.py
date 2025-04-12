@@ -1,9 +1,14 @@
 from flask import Flask, render_template
 from data import db_session
 
-from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, TextAreaField, SubmitField, EmailField
-from wtforms.validators import DataRequired
+# from data.users import User
+from data.categories import Category
+# from data.articles import Article
+# from data.comments import Comment
+
+# from flask_wtf import FlaskForm
+# from wtforms import PasswordField, StringField, TextAreaField, SubmitField, EmailField
+# from wtforms.validators import DataRequired
 
 
 app = Flask(__name__, template_folder='templates')
@@ -18,7 +23,9 @@ def main():
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('user/index.html')
+    db_sess = db_session.create_session()
+    categories = db_sess.query(Category).all()
+    return render_template('user/index.html', categories=categories)
 
 
 if __name__ == '__main__':

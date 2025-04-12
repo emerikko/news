@@ -3,10 +3,15 @@
 {% block title %}Домашняя - Лицейский портал{% endblock %}
 
 {% block content %}
+<!-- Navigation Bar for additional navigation such as categories -->
+<nav class="navbar navbar-expand-md navbar-secondary bg-secondary">
+  {% for category in categories %}
+    <a class = "navbar-brand text-light" href="category/{{ category.slug }}">{{ category.title }}</a>
+  {% endfor %}
+</nav>
 <div class="row">
   <!-- Main content area for articles -->
   <div class="col-md-8">
-    <h1 class="mb-4">Latest News</h1>
     {% if articles %}
       {% for article in articles %}
       <div class="card mb-3">
@@ -20,22 +25,6 @@
     {% else %}
       <p>Пока что нет статей</p>
     {% endif %}
-  </div>
-
-  <!-- Sidebar for additional navigation such as categories -->
-  <div class="col-md-4">
-    <div class="card mb-3">
-      <div class="card-header">
-        Категории
-      </div>
-      <ul class="list-group list-group-flush">
-        {% for category in categories %}
-        <li class="list-group-item">
-          <a href="{{ url_for('category', category_id=category.id) }}">{{ category.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
   </div>
 </div>
 {% endblock %}

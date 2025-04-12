@@ -11,21 +11,23 @@ class Article(SqlAlchemyBase):
 
     # --- Основные идентификаторы ---
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    # URL-дружественная строка (слаг)
-    slug = sqlalchemy.Column(sqlalchemy.String, unique=True, index=True, nullable=False)
 
     # --- Содержимое статьи ---
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False, index=True)  # Заголовок
-    subtitle = sqlalchemy.Column(sqlalchemy.String, nullable=False, index=True)  # Подзаголовок
+    subtitle = sqlalchemy.Column(sqlalchemy.String, nullable=True)  # Подзаголовок
     content = sqlalchemy.Column(sqlalchemy.Text, nullable=False)  # Основной текст статьи
+    summary = sqlalchemy.Column(sqlalchemy.Text, nullable=True)  # Краткое содержание
     featured_image_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)  # URL главного изображения
 
     # --- Авторство и связи ---
-    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False, index=True)
+    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     # Связь с моделью User.
     author = orm.relationship('User', back_populates='articles')
     # Связь с комментариями к этой статье.
     comments = orm.relationship('Comment', back_populates='article', cascade='all, delete-orphan')
+    # Связь с категориями.
+    category_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('categories.id'), nullable=False)
+    category = orm.relationship('Category', back_populates='articles')
 
     # --- Метаданные и статус ---
     created_date = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True),
@@ -43,7 +45,6 @@ class Article(SqlAlchemyBase):
 
     # --- Дополнительные поля ---
     view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)  # Счетчик просмотров
-    tags = orm.relationship('Tag', back_populates='articles')
 
     def __repr__(self):
         return f'<Article id={self.id} title="{self.title}" slug="{self.slug}">'

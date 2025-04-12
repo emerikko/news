@@ -17,7 +17,7 @@ class User(SqlAlchemyBase):
     # --- Отображаемые данные пользователя ---
     first_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     last_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    pseudonym = sqlalchemy.Column(sqlalchemy.String, index=True)
+    pseudonym = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
 
     # --- Метаданные и статус аккаунта ---
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now(datetime.timezone.utc))
