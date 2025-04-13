@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
+# from data import db_session
+# from data.categories import Category
+# from config import article_name_dict
 
 
 class RegisterForm(FlaskForm):
@@ -22,9 +25,4 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
-
-class ArticleForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    category = SelectField('Category', choices=[('tech', 'Технологии'), ('life', 'Жизнь'), ('news', 'Новости')])
-    body = TextAreaField('Content', validators=[DataRequired()])
-    image = FileField('Image')
+# TODO article stuff

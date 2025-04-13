@@ -36,15 +36,12 @@ class Article(SqlAlchemyBase):
                                      default=lambda: datetime.datetime.now(timezone.utc),
                                      onupdate=lambda: datetime.datetime.now(timezone.utc))
     # Дата фактической публикации (может отличаться от created_date, если есть черновики/отложенная публикация)
-    published_date = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True), nullable=True, index=True)
+    published_date = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True), nullable=True)
 
     # 'draft', 'published', 'archived', 'pending_review'
-    status = sqlalchemy.Column(sqlalchemy.String, default='draft', nullable=False, index=True)
-    content_type = sqlalchemy.Column(sqlalchemy.String, default='article', nullable=False, index=True)
+    status = sqlalchemy.Column(sqlalchemy.String, default='draft', nullable=False)
+    content_type = sqlalchemy.Column(sqlalchemy.String, default='article', nullable=False)
     # 'article', 'blog_post'
 
     # --- Дополнительные поля ---
     view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)  # Счетчик просмотров
-
-    def __repr__(self):
-        return f'<Article id={self.id} title="{self.title}" slug="{self.slug}">'
