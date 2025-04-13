@@ -4,11 +4,20 @@
 
 {% block content %}
 <!-- Navigation Bar for additional navigation such as categories -->
-<nav class="navbar navbar-expand-md navbar-secondary bg-secondary">
-  {% for category in categories %}
-    <a class = "navbar-brand text-light" href="category/{{ category.slug }}">{{ category.title }}</a>
-  {% endfor %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary px-4">
+  <div class="container-fluid mx-auto px-0 my-1", style="width: 1096px;">
+    <ul class="nav">
+      {% for category in categories %}
+        {% if category.title %}
+          <li class="nav-item">
+            <a class="nav-link text-light px-0 pl-0 py-0 pr-4" href="category/{{ category.slug }}">{{ category.title }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
 </nav>
+
 <div class="row">
   <!-- Main content area for articles -->
   <div class="col-md-8">
@@ -18,7 +27,7 @@
         <div class="card-body">
           <h4 class="card-title">{{ article.title }}</h4>
           <p class="card-text">{{ article.summary }}</p>
-          <a href="{{ url_for('article_detail', article_id=article.id) }}" class="btn btn-primary">Read More</a>
+          <a href="{{ url_for('article_detail', article_id=article.id) }}" class="btn btn-primary">Подробнее</a>
         </div>
       </div>
       {% endfor %}

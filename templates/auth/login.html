@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Вход — Лицейский портал{% endblock %}
+
+{% block content %}
+<div class="container mt-5 px-0" style="max-width: 1096px;">>
+  <h2 class="mb-4 text-light">Вход в аккаунт</h2>
+  <form method="POST" action="{{ url_for('auth.login') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      <label class="form-label text-light">
+        {{ form.username.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.username(class="form-control") }}
+      {% for error in form.username.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light">
+        {{ form.password.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.password(class="form-control") }}
+      {% for error in form.password.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-check mb-3 text-light">
+      {{ form.remember(class="form-check-input") }}
+      {{ form.remember.label(class="form-check-label") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Войти</button>
+  </form>
+
+  <p class="mt-3 text-light">
+    Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрируйтесь</a>
+  </p>
+</div>
+{% endblock %}

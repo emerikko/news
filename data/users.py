@@ -1,11 +1,12 @@
 import datetime
 import sqlalchemy
 from sqlalchemy import orm
+from flask_login import UserMixin
 
 from .db_session import SqlAlchemyBase
 
 
-class User(SqlAlchemyBase):
+class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
 
     # --- Идентификация и аутентификация ---
@@ -13,11 +14,6 @@ class User(SqlAlchemyBase):
     username = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=False)
     email = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-
-    # --- Отображаемые данные пользователя ---
-    first_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    last_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    pseudonym = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
 
     # --- Метаданные и статус аккаунта ---
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now(datetime.timezone.utc))
@@ -37,9 +33,24 @@ class User(SqlAlchemyBase):
     location = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     website_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-    # --- Настройки пользователя (опционально) ---
-    settings = sqlalchemy.Column(sqlalchemy.JSON, nullable=True)  # Хранение различных настроек в формате JSON
+    # --- Персональные данные (опционально) ---
+    first_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    last_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    pseudonym = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
+    phone = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    birthday = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+    # --- Настройки приватности ---
+    show_first_name = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
+    show_last_name = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
+    show_email = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
+    show_phone = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
+    show_location = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
+    show_birthday = sqlalchemy.Column(sqlalchemy.Boolean, default=True, nullable=False)
+    show_gender = sqlalchemy.Column(sqlalchemy.Boolean, default=True, nullable=False)
 
     # --- Связи с другими моделями (ORM) ---
+    # posts = orm.relationship("Post", back_populates="author")  # Связь со новостями пользователя
     articles = orm.relationship("Article", back_populates="author")  # Связь со статьями пользователя
     comments = orm.relationship("Comment", back_populates="author")  # Связь с комментариями пользователя

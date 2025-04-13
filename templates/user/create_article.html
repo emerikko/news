@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Создание статьи - Лицейский портал{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 720px;">
+  <h2 class="mb-4">Создание статьи</h2>
+  <form method="POST" action="{{ url_for('create_article') }}" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      <label for="title" class="form-label">Заголовок</label>
+      {{ form.title(class="form-control", id="title", placeholder="Введите заголовок") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="slug" class="form-label">Слаг (URL)</label>
+      {{ form.slug(class="form-control", id="slug", placeholder="na-primer-eto") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="content" class="form-label">Контент</label>
+      {{ form.content(class="form-control", id="content", rows="8", placeholder="Текст статьи...") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="category" class="form-label">Категория</label>
+      {{ form.category(class="form-select", id="category") }}
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Изображение</label>
+      {{ form.image(class="form-control", id="image") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Опубликовать</button>
+  </form>
+</div>
+{% endblock %}
