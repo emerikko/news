@@ -51,6 +51,7 @@ class User(SqlAlchemyBase, UserMixin):
     show_gender = sqlalchemy.Column(sqlalchemy.Boolean, default=True, nullable=False)
 
     # --- Связи с другими моделями (ORM) ---
-    # posts = orm.relationship("Post", back_populates="author")  # Связь со новостями пользователя
+    edited_articles = orm.relationship('Article', secondary='article_editors', back_populates='editors')
+    # Связь с редактируемыми статьями
     articles = orm.relationship("Article", back_populates="author")  # Связь со статьями пользователя
     comments = orm.relationship("Comment", back_populates="author")  # Связь с комментариями пользователя
