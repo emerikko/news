@@ -1,7 +1,54 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Создание статьи - Лицейский портал{% endblock %}
+{% block title %}Создание статьи — Лицейский портал{% endblock %}
 
 {% block content %}
-<!--todo-->
+<div class="container mt-5 px-0" style="max-width: 1096px;">
+  <h2 class="mb-4 text-light">Создание статьи</h2>
+  <form method="POST" action="{{ url_for('article.create_article') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.title.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.title(class="form-control bg-secondary text-light") }}
+      {% for error in form.title.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.category.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.category(class="form-control bg-secondary text-light") }}
+      {% for error in form.category.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.content_type.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.content_type(class="form-control bg-secondary text-light") }}
+      {% for error in form.content_type.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.editors.label.text }}
+      </label>
+      {{ form.editors(class="form-control bg-secondary text-light") }}
+      {% for error in form.editors.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label.text }}</button>
+  </form>
+</div>
 {% endblock %}

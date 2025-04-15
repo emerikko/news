@@ -6,6 +6,12 @@ SqlAlchemyBase = orm.declarative_base()
 
 __factory = None
 
+article_editors = sa.Table(
+    'article_editors', SqlAlchemyBase.metadata, sa.Column('article_id', sa.Integer,
+                                                          sa.ForeignKey('articles.id')),
+    sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id'))
+)
+
 
 def global_init(db_file):
     global __factory

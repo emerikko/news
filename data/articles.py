@@ -15,14 +15,15 @@ class Article(SqlAlchemyBase):
     # --- Содержимое статьи ---
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False, index=True)  # Заголовок
     subtitle = sqlalchemy.Column(sqlalchemy.String, nullable=True)  # Подзаголовок
-    content = sqlalchemy.Column(sqlalchemy.Text, nullable=False)  # Основной текст статьи
+    content = sqlalchemy.Column(sqlalchemy.Text, nullable=True)  # Основной текст статьи
     summary = sqlalchemy.Column(sqlalchemy.Text, nullable=True)  # Краткое содержание
     featured_image_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)  # URL главного изображения
 
     # --- Авторство и связи ---
-    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     # Связь с моделью User.
+    author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'), nullable=False)
     author = orm.relationship('User', back_populates='articles')
+    editors = orm.relationship('User', secondary='article_editors', back_populates='edited_articles')
     # Связь с комментариями к этой статье.
     comments = orm.relationship('Comment', back_populates='article', cascade='all, delete-orphan')
     # Связь с категориями.
@@ -40,8 +41,10 @@ class Article(SqlAlchemyBase):
 
     # 'draft', 'published', 'archived', 'pending_review'
     status = sqlalchemy.Column(sqlalchemy.String, default='draft', nullable=False)
-    content_type = sqlalchemy.Column(sqlalchemy.String, default='article', nullable=False)
     # 'article', 'blog_post'
+    content_type = sqlalchemy.Column(sqlalchemy.String, default='article', nullable=False)
+    # any
+    tags = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     # --- Дополнительные поля ---
     view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)  # Счетчик просмотров

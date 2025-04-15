@@ -1,7 +1,98 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Редактирование статьи - Лицейский портал{% endblock %}
+{% block title %}Редактирование статьи — Лицейский портал{% endblock %}
 
 {% block content %}
-<!--todo-->
+<div class="container mt-5 px-0" style="max-width: 1096px;">
+  <h2 class="mb-4 text-light">Редактирование статьи</h2>
+  <form method="POST" action="{{ url_for('article.edit_article', article_id=article.id) }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.title.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.title(class="form-control bg-secondary text-light") }}
+      {% for error in form.title.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.subtitle.label.text }}
+      </label>
+      {{ form.subtitle(class="form-control bg-secondary text-light") }}
+      {% for error in form.subtitle.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.summary.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.summary(class="form-control bg-secondary text-light") }}
+      {% for error in form.summary.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.content.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.content(class="form-control bg-secondary text-light", rows="10") }}
+      <small class="form-text text-secondary">Можно использовать Markdown.</small>
+      {% for error in form.content.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.category_id.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.category_id(class="form-control bg-secondary text-light") }}
+      {% for error in form.category_id.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.content_type.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.content_type(class="form-control bg-secondary text-light") }}
+      {% for error in form.content_type.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.tags.label.text }}
+      </label>
+      {{ form.tags(class="form-control bg-secondary text-light") }}
+      <small class="form-text text-secondary">Укажите теги через запятую, например: "наука, космос".</small>
+      {% for error in form.tags.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label text-light mt-3">
+        {{ form.status.label.text }} <span class="text-danger">*</span>
+      </label>
+      {{ form.status(class="form-control bg-secondary text-light") }}
+      {% for error in form.status.errors %}
+        <div class="text-danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="d-flex gap-3 mt-4">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
 {% endblock %}
