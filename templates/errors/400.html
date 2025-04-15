@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Неверный запрос — Лицейский портал{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+  <h1 class="display-4 text-warning">400</h1>
+  <p class="lead text-light">Запрос не может быть обработан.</p>
+  <p class="text-light">Проверьте введённые данные или попробуйте ещё раз.</p>
+  <a href="{{ url_for('main.index') }}" class="btn btn-primary mt-3">Вернуться на главную</a>
+</div>
+{% endblock %}
