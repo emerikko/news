@@ -3,10 +3,10 @@ html, body {
   margin: 0;
 }
 
-body {
+html, body {
   display: flex;
   flex-direction: column;
-  background-color: #0d0d0d;
+  background-color: #080808;
 }
 
 .navbar.bg-dark,
@@ -17,7 +17,9 @@ body {
 
 .navbar.bg-secondary,
 .footer.bg-secondary,
-.card.bg-secondary {
+.card-body.bg-secondary,
+.dropdown-menu.bg-secondary,
+.form-control.bg-secondary {
   background-color: #171717 !important;
 }
 
@@ -29,6 +31,15 @@ main {
   font-family: "Rubik Mono One", monospace;
   font-weight: 400;
   font-style: normal;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+  background-color: #636363;
+}
+
+.dropdown-menu {
+  border: 1px solid #636363;
 }
 
 .navbar {

@@ -12,4 +12,3 @@ article_status_dict = {"draft": "Черновик",
 article_name_dict = {"article": "Статья",
                      "post": "Пост",
                      "news": "Новость"}
-

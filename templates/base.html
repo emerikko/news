@@ -21,7 +21,7 @@
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-    <div class="container-fluid mx-auto px-0 my-0", style="max-width: 1096px;">
+    <div class="container-fluid mx-auto px-0 my-0" style="max-width: 1096px;">
       <a class="navbar-brand rubik-mono-one-regular px-0 py-0 my-0 h1" href="{{ url_for('main.index') }}">Лицейский портал</a>
       <button class="navbar-toggler" type="button"
         data-bs-toggle="collapse" data-bs-target="#navbarToggler"
@@ -29,12 +29,10 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarToggler">
-        <ul class="navbar-nav me-auto mt-lg-0">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link active" href="{{ url_for('main.index') }}">Главная</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Категории</a>
+            <a class="btn btn-outline-secondary btn-sm" style="color: #f8f9fa; border-color: #6c757d"
+              href="{{ url_for('article.create_article') }}">СТАНЬ АВТОРОМ!</a>
           </li>
         </ul>
 
@@ -45,14 +43,16 @@
                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {{ authorized_user.username | default('Аккаунт') }}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu dropdown-menu-end bg-secondary" aria-labelledby="navbarDropdown">
               {% if authorized_user.is_authenticated %}
-                <li><a href="/profile/{{ authorized_user.username }}" class="dropdown-item">Профиль</a></li>
+                <li><a href="/profile/{{ authorized_user.username }}"
+                       class="dropdown-item text-light">
+                  Профиль</a></li>
                 <li><div class="dropdown-divider"></div></li>
-                <li><a href="/logout" class="dropdown-item">Sign Out</a></li>
+                <li><a href="/logout" class="dropdown-item text-danger">Свершить Исход</a></li>
               {% else %}
-                <li><a href="/login" class="dropdown-item">Sign In</a></li>
-                <li><a href="/register" class="dropdown-item">Sign Up</a></li>
+                <li><a href="/login" class="dropdown-item text-light">Явиться во Образ</a></li>
+                <li><a href="/register" class="dropdown-item text-light">Начертать Лик</a></li>
               {% endif %}
             </ul>
           </li>
@@ -61,14 +61,17 @@
     </div>
   </nav>
 
-  {% block content %}
-  <!-- Page specific content goes here -->
-  {% endblock %}
+  <main class="flex-grow-1">
+    {% block content %}
+    <!-- Page specific content goes here -->
+    {% endblock %}
+  </main>
 
   <!-- Footer -->
-  <footer class="footer mt-auto py-3 bg-secondary">
-    <div class="container">
-      <span class="text-muted">&copy; {{ current_year | default(2025) }} Лицейский портал. Какие-то права вообще защищены?</span>
+  <footer class="footer mt-auto py-2 bg-secondary">
+    <div class="container mx-auto">
+      <span class="text-secondary mx-auto">&copy; {{ current_year | default(2025) }} Лицейский портал.
+        Какие-то права вообще защищены?</span>
     </div>
   </footer>
 
@@ -78,3 +81,5 @@
     crossorigin="anonymous"></script>
 </body>
 </html>
+
+<!--TODO: Fix the design code and make two themes supported-->
