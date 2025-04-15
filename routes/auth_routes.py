@@ -60,3 +60,5 @@ def logout():
     logout_user()
     flash('Вы вышли из аккаунта.', 'info')
     return redirect(url_for('main.index'))
+
+# TODO: Add password recovery
