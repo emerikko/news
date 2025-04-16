@@ -47,4 +47,15 @@ class Article(SqlAlchemyBase):
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     # --- Дополнительные поля ---
-    view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)  # Счетчик просмотров
+    view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)
+    votes = orm.relationship("ArticleVote", back_populates="article", cascade="all, delete-orphan")
+
+    # TODO add view counter
+
+    @property
+    def vote_score(self):
+        return sum(v.vote for v in self.votes)
+
+    def get_user_vote(self, user_id):
+        vote = next((v for v in self.votes if v.user_id == user_id), None)
+        return vote.vote if vote else 0

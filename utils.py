@@ -48,4 +48,18 @@ def average_hotness():
         return 0
     return ans / len(hots)
 
+
+def get_user_comment_karma(user_id, session):
+    """Returns the total karma (sum of votes) for all comments authored by a user."""
+    from sqlalchemy import func
+    from data.comments import Comment
+    from data.comment_votes import CommentVote
+
+    return (
+        session.query(func.coalesce(func.sum(CommentVote.vote), 0))
+        .join(Comment, CommentVote.comment_id == Comment.id)
+        .filter(Comment.author_id == user_id)
+        .scalar()
+    )
+
 # TODO: Add more useful/admin functions

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} — Лицейский портал{% endblock %}
+
+{% block content %}
+<div class="container mt-1 p-0" style="max-width: 1096px;">
+  <div class="card mt-2 bg-secondary text-light rounded-0">
+    <div class="card-body">
+      <h3 class="card-title">{{ article.title }}</h3>
+
+      {% if article.subtitle %}
+        <h5 class="card-subtitle mb-3 text-light">{{ article.subtitle }}</h5>
+      {% endif %}
+
+      {% if article.featured_image_url %}
+        <img src="{{ article.featured_image_url }}" alt="Изображение статьи" class="img-fluid mb-3 rounded"
+             style="max-height: 400px; width: 100%; object-fit: cover;">
+      {% endif %}
+
+      {% if article.tags %}
+        <p class="text-secondary">{{ article.tags }}</p>
+      {% endif %}
+
+      <div class="mt-4 mb-4">{{ article.content_html | safe }}</div>
+      <hr class="bg-light">
+
+      <p><strong>Автор:</strong> {{ article.author.username }}</p>
+      <p><strong>Категория:</strong> {{ article.category.title }}</p>
+
+      {% if current_user.is_authenticated %}
+      <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline">
+        <input type="hidden" name="vote_type" value="upvote">
+        <button class="btn btn-sm btn-outline-light
+        {% if article.get_user_vote(current_user.id) == 1 %}active{% endif %}" type="submit">👍</button>
+      </form>
+      <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline">
+      <span class="mx-2 text-{% if article.get_user_vote(current_user.id) >= 1 %}success
+      {% elif article.get_user_vote(current_user.id) <= -1 %}danger
+      {% else %}secondary
+      {% endif %}">{{ article.vote_score }}</span>
+      <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline">
+        <input type="hidden" name="vote_type" value="downvote">
+        <button class="btn btn-sm btn-outline-light
+        {% if article.get_user_vote(current_user.id) == -1 %}active{% endif %}" type="submit">👎</button>
+      </form>
+      {% endif %}
+      <p class="text-secondary"><small>Просмотры: {{ article.view_count }}</small></p>
+    </div>
+  </div>
+
+  <div class="card bg-secondary text-light mt-2 rounded-0">
+    <div class="card-body">
+      <h4 class="card-title">Комментарии</h4>
+
+      {% if current_user.is_authenticated %}
+        <form action="{{ url_for('article.add_comment', article_id=article.id) }}" method="post" class="mt-4">
+          <div class="form-group mb-2">
+            <textarea name="content" class="form-control bg-dark text-light" rows="3" placeholder="Напишите комментарий..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-dark">Отправить</button>
+        </form>
+      {% else %}
+        <p class="text-secondary mt-3">Чтобы оставить комментарий, <a href="{{ url_for('auth.login') }}">войдите</a>.</p>
+      {% endif %}
+
+      {% if article.comments %}
+        {% for comment in article.comments %}
+          <div class="border-bottom py-2">
+            <p class="mb-1"><strong>{{ comment.author.username }}</strong>
+              <small class="text-secondary">({{ comment.created_date.strftime('%d.%m.%Y %H:%M') }})</small></p>
+            <p class="mb-2">{{ comment.content }}</p>
+
+            {% if current_user.is_authenticated %}
+              <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline">
+                <input type="hidden" name="vote_type" value="upvote">
+                <button class="btn btn-sm btn-outline-light
+                {% if comment.get_user_vote(current_user.id) == 1 %}active{% endif %}" type="submit">👍</button>
+              </form>
+              <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline">
+              <span class="mx-2 text-{% if comment.get_user_vote(current_user.id) >= 1 %}success
+              {% elif comment.get_user_vote(current_user.id) <= -1 %}danger
+              {% else %}secondary
+              {% endif %}">{{ comment.vote_score }}</span>
+              <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline">
+                <input type="hidden" name="vote_type" value="downvote">
+                <button class="btn btn-sm btn-outline-light
+                {% if comment.get_user_vote(current_user.id) == -1 %}active{% endif %}" type="submit">👎</button>
+              </form>
+            {% endif %}
+            </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">Комментариев пока нет.</p>
+      {% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('main.index') }}" class="btn btn-secondary text-light my-2">Назад на главную</a>
+</div>
+{% endblock %}
