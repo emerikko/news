@@ -4,7 +4,7 @@ from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
 from data import db_session
 from data.categories import Category
-from config import article_name_dict, article_status_dict
+from config import article_type_dict, article_status_dict
 from utils import get_users_by_usernames
 
 
@@ -47,7 +47,7 @@ def category_choices():
 class ArticleCreateForm(FlaskForm):
     title = StringField("Заголовок", validators=[DataRequired(), Length(min=1, max=255)])
     category = SelectField("Категория", coerce=int, validators=[DataRequired()])
-    content_type = SelectField("Тип контента", coerce=str, choices=list(article_name_dict.items()),
+    content_type = SelectField("Тип контента", coerce=str, choices=list(article_type_dict.items()),
                                validators=[DataRequired()])
     editors = StringField("Редакторы (юзернеймы через запятую)")
     submit = SubmitField("Создать")
@@ -63,7 +63,7 @@ class ArticleEditForm(FlaskForm):
     content = TextAreaField("Контент", validators=[DataRequired()])
     summary = TextAreaField("Сводка", validators=[DataRequired()])
     category_id = SelectField("Категория", coerce=int, validators=[DataRequired()])
-    content_type = SelectField("Тип контента", coerce=str, choices=list(article_name_dict.items()),
+    content_type = SelectField("Тип контента", coerce=str, choices=list(article_type_dict.items()),
                                validators=[DataRequired()])
     tags = StringField("Теги (через запятую)")
     status = SelectField("Статус", coerce=str, choices=list(article_status_dict.items()),

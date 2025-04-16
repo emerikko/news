@@ -11,15 +11,19 @@ html, body {
 
 .navbar.bg-dark,
 .footer.bg-dark,
-.card.bg-dark {
+.card.bg-dark,
+.form-control.bg-dark,
+.btn.btn-dark {
   background-color: #0d0d0d !important;
 }
 
 .navbar.bg-secondary,
 .footer.bg-secondary,
 .card-body.bg-secondary,
+.card.bg-secondary,
 .dropdown-menu.bg-secondary,
-.form-control.bg-secondary {
+.form-control.bg-secondary,
+.btn.btn-secondary {
   background-color: #171717 !important;
 }
 
@@ -40,6 +44,10 @@ main {
 
 .dropdown-menu {
   border: 1px solid #636363;
+}
+
+.card {
+  border: 0px
 }
 
 .navbar {

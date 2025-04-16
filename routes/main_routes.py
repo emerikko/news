@@ -13,6 +13,11 @@ main_bp = Blueprint('main', __name__)
 def index():
     db_sess = db_session.create_session()
     categories = db_sess.query(Category).all()
-    articles = db_sess.query(Article).all()
+    articles = sorted(
+        [article for article in db_sess.query(Article).all() if article.published_date],
+        key=lambda x: x.published_date,
+        reverse=True
+    )
     return render_template('user/index.html', categories=categories, articles=articles,
-                           now=datetime.now(), average_hotness=average_hotness(), hotness=hotness)
+                           now=datetime.now(), average_hotness=average_hotness(), hotness=hotness,
+                           article_type_color_dict=article_type_color_dict, article_type_dict=article_type_dict)

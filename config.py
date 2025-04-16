@@ -9,6 +9,9 @@ user_status_dict = {"pending": "Ожидает проверки",
 article_status_dict = {"draft": "Черновик",
                        "published": "Опубликован",
                        "archived": "Архивирован"}
-article_name_dict = {"article": "Статья",
+article_type_dict = {"article": "Статья",
                      "post": "Пост",
                      "news": "Новость"}
+article_type_color_dict = {"article": "primary",
+                           "post": "success",
+                           "news": "danger"}

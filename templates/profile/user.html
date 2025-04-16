@@ -39,10 +39,10 @@
           <a href="{{ user.website_url }}" target="_blank">{{ user.website_url }}</a>
       {% endif %}
       </p>
-      <p><small class="text-muted">Зарегистрирован: {{ user.created_date.strftime('%d.%m.%Y') }}</small></p>
+      <p><small class="text-secondary">Зарегистрирован: {{ user.created_date.strftime('%d.%m.%Y') }}</small></p>
     </div>
   </div>
 
-  <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Назад на главную</a>
+  <a href="{{ url_for('main.index') }}" class="btn btn-secondary text-light">Назад на главную</a>
 </div>
 {% endblock %}
