@@ -138,8 +138,9 @@ def vote_article(article_id):
         new_vote = ArticleVote(article=article, user_id=current_user.id, vote=vote_value)
         db_sess.add(new_vote)
     db_sess.commit()
+    article_id = article.id
     db_sess.close()
-    return redirect(url_for('article.article_detail', article_id=article.id))
+    return redirect(url_for('article.article_detail', article_id=article_id))
 
 
 # TODO: Add delete article route
