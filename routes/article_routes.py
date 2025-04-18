@@ -91,7 +91,10 @@ def article_detail(article_id):
             (article.author_id != current_user.id or current_user.username not in article.editors)):
         db_sess.close()
         return redirect(url_for('main.index'))
+
     article.view_count += 1
+    db_sess.commit()
+    
     article.content_html = markdown.markdown(
         article.content or '',
         extensions=['fenced_code', 'codehilite', 'tables', 'toc', 'nl2br']

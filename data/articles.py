@@ -50,8 +50,6 @@ class Article(SqlAlchemyBase):
     view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)
     votes = orm.relationship("ArticleVote", back_populates="article", cascade="all, delete-orphan")
 
-    # TODO add view counter
-
     @property
     def vote_score(self):
         return sum(v.vote for v in self.votes)

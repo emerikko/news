@@ -50,6 +50,10 @@ main {
   border: 0px
 }
 
+.bg-warning-subtle {
+  background-color: #b36c27 !important;
+}
+
 .navbar {
   height: 48px;
   min-height: 48px;
