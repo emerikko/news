@@ -59,7 +59,7 @@ class ArticleCreateForm(FlaskForm):
 
 class ArticleEditForm(FlaskForm):
     title = StringField("Заголовок", validators=[DataRequired(), Length(min=1, max=255)])
-    subtitle = StringField("Подзаголовок", validators=[Length(min=1, max=255)])
+    subtitle = StringField("Подзаголовок", validators=[Length(min=0, max=255)])
     content = TextAreaField("Контент", validators=[DataRequired()])
     summary = TextAreaField("Сводка", validators=[DataRequired()])
     category_id = SelectField("Категория", coerce=int, validators=[DataRequired()])
