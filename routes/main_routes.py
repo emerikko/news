@@ -18,7 +18,6 @@ def index():
         key=lambda x: x.published_date,
         reverse=True
     )
-    db_sess.close()
     return render_template('user/index.html', categories=categories, articles=articles,
                            now=datetime.now(), average_hotness=average_hotness(), hotness=hotness,
                            article_type_color_dict=article_type_color_dict, article_type_dict=article_type_dict)

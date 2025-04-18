@@ -36,13 +36,13 @@ def create_article():
                 flash(f"Editor(s) not found: {', '.join(missing_editors)}", 'danger')
                 return render_template('articles/create_article.html', form=form)
             article.editors.extend(editors)
-
         db_sess.add(article)
         db_sess.commit()
+        article_id = article.id
         db_sess.close()
 
         flash('Article created successfully!', 'success')
-        return redirect(url_for('article.edit_article', article_id=article.id))
+        return redirect(url_for('article.edit_article', article_id=article_id))
 
     return render_template('articles/create_article.html', form=form)
 
@@ -72,11 +72,12 @@ def edit_article(article_id):
             article.published_date = datetime.now()
 
         db_sess.commit()
+        article_id = article.id
         db_sess.close()
-        flash("Статья успешно обновлена.", "success")
-        return redirect(url_for('main.index', article_id=article.id))
 
-    db_sess.close()
+        flash("Статья успешно обновлена.", "success")
+        return redirect(url_for('article.article_detail', article_id=article_id))
+
     return render_template('articles/edit_article.html', form=form, article=article)
 
 
