@@ -12,6 +12,7 @@ def profile(identifier):
     user = db_sess.query(User).filter(
         User.id == int(identifier) if identifier.isdigit() else User.username == identifier
     ).first()
+    db_sess.close()
     if not user:
         abort(404)
     return render_template('profile/user.html',

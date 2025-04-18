@@ -28,4 +28,5 @@ def vote_comment(comment_id):
         db_sess.add(new_vote)
 
     db_sess.commit()
+    db_sess.close()
     return redirect(url_for('article.article_detail', article_id=comment.article_id))

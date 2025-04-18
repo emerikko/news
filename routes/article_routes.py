@@ -32,12 +32,14 @@ def create_article():
             editors, missing_editors = get_users_by_usernames(form.editors.data.split(','), db_sess)
 
             if missing_editors:
+                db_sess.close()
                 flash(f"Editor(s) not found: {', '.join(missing_editors)}", 'danger')
                 return render_template('articles/create_article.html', form=form)
             article.editors.extend(editors)
 
         db_sess.add(article)
         db_sess.commit()
+        db_sess.close()
 
         flash('Article created successfully!', 'success')
         return redirect(url_for('article.edit_article', article_id=article.id))
@@ -55,6 +57,7 @@ def edit_article(article_id):
     is_author = current_user == article.author
     is_editor = current_user.username in (article.editors or [])
     if not (is_author or is_editor):
+        db_sess.close()
         flash("У вас нет прав для редактирования этой статьи.", "danger")
         return redirect(url_for('main.index'))
 
@@ -69,9 +72,11 @@ def edit_article(article_id):
             article.published_date = datetime.now()
 
         db_sess.commit()
+        db_sess.close()
         flash("Статья успешно обновлена.", "success")
         return redirect(url_for('main.index', article_id=article.id))
 
+    db_sess.close()
     return render_template('articles/edit_article.html', form=form, article=article)
 
 
@@ -80,10 +85,13 @@ def article_detail(article_id):
     db_sess = db_session.create_session()
     article = db_sess.query(Article).get(article_id)
     if not article:
+        db_sess.close()
         abort(404)
     if (article.status == 'draft' and
             (article.author_id != current_user.id or current_user.username not in article.editors)):
+        db_sess.close()
         return redirect(url_for('main.index'))
+    article.view_count += 1
     article.content_html = markdown.markdown(
         article.content or '',
         extensions=['fenced_code', 'codehilite', 'tables', 'toc', 'nl2br']
@@ -101,6 +109,9 @@ def add_comment(article_id):
         comment = Comment(content=content, author_id=current_user.id, article_id=article_id)
         db_sess.add(comment)
         db_sess.commit()
+        db_sess.close()
+    else:
+        db_sess.close()
     return redirect(url_for('article.article_detail', article_id=article_id))
 
 
@@ -122,8 +133,8 @@ def vote_article(article_id):
     else:
         new_vote = ArticleVote(article=article, user_id=current_user.id, vote=vote_value)
         db_sess.add(new_vote)
-
     db_sess.commit()
+    db_sess.close()
     return redirect(url_for('article.article_detail', article_id=article.id))
 
 

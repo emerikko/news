@@ -15,6 +15,7 @@ def register():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         if db_sess.query(User).filter((User.username == form.username.data) | (User.email == form.email.data)).first():
+            db_sess.close()
             flash('Такой пользователь уже существует.', 'danger')
             return render_template('auth/register.html', form=form)
 
@@ -31,6 +32,7 @@ def register():
         )
         db_sess.add(user)
         db_sess.commit()
+        db_sess.close()
         flash('Успешно зарегистрирован!', 'success')
         return redirect(url_for('auth.login'))
 
@@ -47,10 +49,12 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == form.username.data).first()
         if user and check_password_hash(user.hashed_password, form.password.data):
+            db_sess.close()
             login_user(user, remember=form.remember.data)
             flash('Добро пожаловать!', 'success')
             return redirect(request.args.get('next') or url_for('main.index'))
         else:
+            db_sess.close()
             flash('Неверные данные', 'danger')
     return render_template('auth/login.html', form=form)
 

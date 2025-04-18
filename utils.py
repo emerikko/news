@@ -8,10 +8,11 @@ db_session.global_init("db/site.db")
 
 
 def new_category(slug, title, description):
-    db = db_session.create_session()
+    db_sess = db_session.create_session()
     category = Category(slug=slug, title=title, description=description)
-    db.add(category)
-    db.commit()
+    db_sess.add(category)
+    db_sess.commit()
+    db_sess.close()
     return category
 
 
@@ -38,9 +39,10 @@ def hotness(article: Article):
 
 
 def average_hotness():
-    db = db_session.create_session()
+    db_sess = db_session.create_session()
     ans = 0
-    hots = [hotness(q) if q.content_type == 'published' else None for q in db.query(Article).all()]
+    hots = [hotness(q) if q.status == 'published' else None for q in db_sess.query(Article).all()]
+    db_sess.close()
     for i in hots:
         if i:
             ans += i
@@ -61,5 +63,6 @@ def get_user_comment_karma(user_id, session):
         .filter(Comment.author_id == user_id)
         .scalar()
     )
+
 
 # TODO: Add more useful/admin functions
