@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField
+from flask_wtf.file import FileAllowed, FileField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
 from wtforms.fields.simple import TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from data import db_session
 from data.categories import Category
 from config import article_type_dict, article_status_dict
@@ -93,4 +94,9 @@ class ArticleEditForm(FlaskForm):
 
         self.category_id.choices = [(c.id, c.title) for c in db_sess.query(Category).all()]
 
-# TODO: Add forms for article deletion, comments, password recovery
+
+class ImageUploadForm(FlaskForm):
+    image = FileField('Загрузка изображений', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Только изображения!')
+    ])
+    submit = SubmitField('Загрузить')

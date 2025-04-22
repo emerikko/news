@@ -49,6 +49,7 @@ class Article(SqlAlchemyBase):
     # --- Дополнительные поля ---
     view_count = sqlalchemy.Column(sqlalchemy.Integer, default=0, nullable=False)
     votes = orm.relationship("ArticleVote", back_populates="article", cascade="all, delete-orphan")
+    images = orm.relationship("Image", back_populates="article", cascade="all, delete-orphan")
 
     @property
     def vote_score(self):

@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, jsonify
 from data import db_session
 from datetime import datetime
-from forms import ArticleCreateForm, ArticleEditForm
+from forms import ArticleCreateForm, ArticleEditForm, ImageUploadForm
 from flask_login import login_required, current_user
 
 from data.articles import Article
 from data.article_votes import ArticleVote
 from data.comments import Comment
-from utils import get_users_by_usernames
-from config import article_type_dict
+from data.images import Image
+from utils import get_users_by_usernames, save_image, delete_image, set_featured_image
+from config import article_type_dict, article_type_color_dict
 import markdown
 
 article_bp = Blueprint('article', __name__)
@@ -142,5 +143,98 @@ def vote_article(article_id):
     db_sess.close()
     return redirect(url_for('article.article_detail', article_id=article_id))
 
+
+@article_bp.route('/articles/my', methods=['GET'])
+@login_required
+def my_articles():
+    db_sess = db_session.create_session()
+    articles = db_sess.query(Article).filter_by(author_id=current_user.id).all()
+    return render_template(
+        'articles/my_articles.html',
+        articles=articles,
+        article_type_dict=article_type_dict,
+        article_type_color_dict=article_type_color_dict
+    )
+
+# Image handling routes
+@article_bp.route('/articles/<int:article_id>/images', methods=['GET', 'POST'])
+@login_required
+def article_images(article_id):
+    db_sess = db_session.create_session()
+    article = db_sess.query(Article).get(article_id)
+
+    if not article or (article.author_id != current_user.id and current_user.username not in article.editors):
+        db_sess.close()
+        flash("У вас нет прав для редактирования изображений этой статьи.", "danger")
+        return redirect(url_for('main.index'))
+    
+    form = ImageUploadForm()
+    
+    if form.validate_on_submit():
+        if 'image' in request.files and request.files['image'].filename:
+            image = save_image(request.files['image'], article_id)
+            if not article.featured_image_url and image:
+                # Set as featured if this is the first image
+                set_featured_image(article_id, image.id)
+                flash("Изображение загружено и установлено как главное.", "success")
+            else:
+                flash("Изображение успешно загружено.", "success")
+        else:
+            flash("Пожалуйста, выберите файл для загрузки.", "warning")
+        
+        return redirect(url_for('article.article_images', article_id=article_id))
+
+    images = db_sess.query(Image).filter_by(article_id=article_id).all()
+    db_sess.close()
+    
+    return render_template('articles/article_images.html', 
+                          article=article, 
+                          images=images, 
+                          form=form)
+
+
+@article_bp.route('/articles/<int:article_id>/images/<int:image_id>/delete', methods=['POST'])
+@login_required
+def delete_article_image(article_id, image_id):
+    db_sess = db_session.create_session()
+    article = db_sess.query(Article).get(article_id)
+
+    if not article or (article.author_id != current_user.id and current_user.username not in article.editors):
+        db_sess.close()
+        flash("У вас нет прав для удаления изображений этой статьи.", "danger")
+        return redirect(url_for('main.index'))
+
+    is_featured = article.featured_image_url and article.featured_image_url.endswith(f"/{image_id}")
+
+    if delete_image(image_id):
+        if is_featured:
+            article.featured_image_url = None
+            db_sess.commit()
+        db_sess.close()
+        flash("Изображение успешно удалено.", "success")
+    else:
+        db_sess.close()
+        flash("Не удалось удалить изображение.", "danger")
+    
+    return redirect(url_for('article.article_images', article_id=article_id))
+
+
+@article_bp.route('/articles/<int:article_id>/images/<int:image_id>/set-featured', methods=['POST'])
+@login_required
+def set_featured_article_image(article_id, image_id):
+    db_sess = db_session.create_session()
+    article = db_sess.query(Article).get(article_id)
+
+    if not article or (article.author_id != current_user.id and current_user.username not in article.editors):
+        db_sess.close()
+        flash("У вас нет прав для изменения изображений этой статьи.", "danger")
+        return redirect(url_for('main.index'))
+
+    if set_featured_image(article_id, image_id):
+        flash("Главное изображение статьи обновлено.", "success")
+    else:
+        flash("Не удалось установить изображение как главное.", "danger")
+    
+    return redirect(url_for('article.article_images', article_id=article_id))
 
 # TODO: Add delete article route

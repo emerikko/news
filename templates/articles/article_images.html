@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Изображения статьи — Лицейский портал{% endblock %}
+
+{% block content %}
+<div class="container mt-5 px-0" style="max-width: 1096px;">
+  <h2 class="mb-4 text-light">Изображения для статьи "{{ article.title }}"</h2>
+  
+  <div class="card bg-secondary text-light mb-4 rounded-0">
+    <div class="card-body">
+      <h5 class="card-title">Загрузить новое изображение</h5>
+      <form method="POST" action="{{ url_for('article.article_images', article_id=article.id) }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+          <label class="form-label text-light mt-3">
+            {{ form.image.label.text }}
+          </label>
+          {{ form.image(class="form-control bg-dark text-light") }}
+          {% for error in form.image.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+          <small class="form-text text-secondary">Поддерживаемые форматы: JPG, JPEG, PNG, GIF</small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label.text }}</button>
+      </form>
+    </div>
+  </div>
+  
+  {% if images %}
+    <h4 class="text-light mb-3">Загруженные изображения</h4>
+    <div class="row">
+      {% for image in images %}
+        <div class="col-md-4 mb-4">
+          <div class="card bg-secondary text-light h-100 rounded-0">
+            <img src="{{ image.url }}" class="card-img-top" alt="{{ image.original_filename }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ image.original_filename }}</h5>
+              <p class="card-text">
+                <small class="text-secondary">Загружено: {{ image.uploaded_date.strftime('%d.%m.%Y %H:%M') }}</small>
+                <a class="text-secondary" href="{{ image.url }}">Ссылка</a>
+              </p>
+              <div class="d-flex gap-2 mt-3">
+                {% if article.featured_image_url == image.url %}
+                  <span class="badge bg-success">Главное изображение</span>
+                {% else %}
+                  <form action="{{ url_for('article.set_featured_article_image', article_id=article.id, image_id=image.id) }}" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Сделать главным</button>
+                  </form>
+                {% endif %}
+                
+                <form action="{{ url_for('article.delete_article_image', article_id=article.id, image_id=image.id) }}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить это изображение?');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-secondary">
+      У этой статьи пока нет загруженных изображений.
+    </div>
+  {% endif %}
+  
+  <div class="mt-4">
+    <a href="{{ url_for('article.edit_article', article_id=article.id) }}" class="btn btn-secondary">Вернуться к редактированию статьи</a>
+  </div>
+</div>
+{% endblock %}
