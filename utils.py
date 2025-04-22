@@ -41,7 +41,10 @@ def hotness(article: Article):
     if not article.published_date:
         return 0
     time_from_publish = (datetime.now() - article.published_date).total_seconds() // 60
-    return article.view_count / time_from_publish if time_from_publish > 0 else 0
+    activity_rating = (article.view_count * config.hotness_views_modifier
+                       + len(article.votes) * config.hotness_votes_modifier
+                       + len(article.comments) * config.hotness_comments_modifier)
+    return activity_rating / time_from_publish if time_from_publish > 0 else 0
 
 
 def average_hotness():
@@ -54,7 +57,7 @@ def average_hotness():
             ans += i
     if len(hots) == 0:
         return 0
-    return ans / len(hots)
+    return ans / (len(hots) - hots.count(None))
 
 
 def get_user_comment_karma(user_id, session):

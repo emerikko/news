@@ -15,3 +15,6 @@ article_type_dict = {"article": "Статья",
 article_type_color_dict = {"article": "primary",
                            "post": "success",
                            "news": "danger"}
+hotness_views_modifier = 1
+hotness_votes_modifier = 5
+hotness_comments_modifier = 10
