@@ -1,0 +1,62 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+html, body {
+  display: flex;
+  flex-direction: column;
+  background-color: #080808;
+}
+
+.navbar.bg-dark,
+.footer.bg-dark,
+.card.bg-dark,
+.form-control.bg-dark,
+.btn.btn-dark {
+  background-color: #0d0d0d !important;
+}
+
+.navbar.bg-secondary,
+.footer.bg-secondary,
+.card-body.bg-secondary,
+.card.bg-secondary,
+.dropdown-menu.bg-secondary,
+.form-control.bg-secondary,
+.btn.btn-secondary {
+  background-color: #171717 !important;
+}
+
+main {
+  flex: 1;
+}
+
+.rubik-mono-one-regular {
+  font-family: "Rubik Mono One", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+  background-color: #636363;
+}
+
+.dropdown-menu {
+  border: 1px solid #636363;
+}
+
+.card {
+  border: 0px
+}
+
+.bg-warning-subtle {
+  background-color: #b36c27 !important;
+}
+
+.navbar {
+  height: 48px;
+  min-height: 48px;
+  padding-top: 0;
+  padding-bottom: 0;
+}

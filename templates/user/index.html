@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Домашняя - Лицейский портал{% endblock %}
+
+{% block content %}
+<!-- Navigation Bar for additional navigation such as categories -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary px-4">
+  <div class="container-fluid mx-auto px-0 my-1", style="width: 1096px;">
+    <ul class="nav">
+      {% for category in categories %}
+        {% if category.title %}
+          <li class="nav-item">
+            <a class="nav-link text-secondary px-0 py-0 me-5 link-light"
+               href="category/{{ category.slug }}">
+              {{ category.title }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+
+<div class="row px-4">
+  <!-- Main content area for articles -->
+  <div class="col-md-8 mt-3 px-0 mx-auto" style="max-width: 1096px;">
+    {% if articles %}
+      {% for article in articles %}
+        {% if article.status == 'published' %}
+          <div class="card mb-3 rounded-0">
+          {% if hotness(article) <= 1.5 * average_hotness %}
+            <div class="card-body bg-secondary text-light">
+          {% else %}
+              <div class="card-body bg-warning-subtle text-light">
+          {% endif %}
+                <div class="card-header px-0 pt-0 text-{{ article_type_color_dict[article.content_type] }}">
+                  {{ article_type_dict[article.content_type] }}
+                </div>
+                <h3 class="card-title">{{ article.title }}</h3>
+                <h5 class="card-subtitle mb-2 text-secondary">{{ article.subtitle }}</h5>
+                  {% if article.featured_image_url %}
+                    <img src="{{ article.featured_image_url }}" alt="Изображение статьи" class="img-fluid mb-3 rounded"
+                         style="max-height: 400px; width: 100%; object-fit: cover;">
+                  {% endif %}
+                <p class="card-text">{{ article.summary }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('article.article_detail', article_id=article.id) }}"
+                     class="btn btn-outline-primary btn-sm">Подробнее</a>
+                  <small class="text-secondary">Просмотры: {{ article.view_count }}</small>
+                </div>
+              </div>
+            </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+          <p class="text-light">Пока что нет статей</p>
+    {% endif %}
+          </div>
+  </div>
+</div>
+{% endblock %}
