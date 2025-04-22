@@ -1,1 +1,0 @@
-# TODO: View categories/tags
