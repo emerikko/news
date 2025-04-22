@@ -46,7 +46,7 @@
             <ul class="dropdown-menu dropdown-menu-end bg-secondary" aria-labelledby="navbarDropdown">
               {% if authorized_user.is_authenticated %}
                 <li><a href="/profile/{{ authorized_user.username }}"
-                       class="dropdown-item text-light">Профиль</a></li>
+                       class="dropdown-item text-light">Зеркало</a></li>
               <li><a href="/articles/my" class="dropdown-item text-light">Мои Чертания</a></li>
                 <li><div class="dropdown-divider"></div></li>
                 <li><a href="/logout" class="dropdown-item text-danger">Свершить Исход</a></li>
