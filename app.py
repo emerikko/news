@@ -2,7 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from data import db_session
 from data.users import User
-import config
+import os
 
 from routes import register_blueprints  # new import
 
@@ -30,7 +30,8 @@ def inject_user():
 def main():
     db_session.global_init("db/site.db")
     register_blueprints(app)
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
