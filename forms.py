@@ -104,3 +104,10 @@ class ImageUploadForm(FlaskForm):
         FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Только изображения!')
     ])
     submit = SubmitField('Загрузить')
+
+
+class NewCategoryForm(FlaskForm):
+    title = StringField("Название", validators=[DataRequired(), Length(min=1, max=255)])
+    slug = StringField("Красивая ссылка", validators=[DataRequired(), Length(min=1, max=255)])
+    description = TextAreaField("Описание", validators=[DataRequired()])
+    submit = SubmitField("Создать")
