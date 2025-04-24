@@ -34,19 +34,19 @@ def index():
 @main_bp.route('/category/<slug>')
 def category(slug):
     db_sess = db_session.create_session()
-    category = db_sess.query(Category).filter_by(slug=slug).first()
-    if not category:
+    _category = db_sess.query(Category).filter_by(slug=slug).first()
+    if not _category:
         db_sess.close()
         abort(404)
 
     articles = (db_sess.query(Article)
-                .filter_by(category_id=category.id, status='published')
+                .filter_by(category_id=_category.id, status='published')
                 .order_by(Article.created_date.desc())
                 .all())
 
     return render_template(
-        'user/category.html',
-        category=category,
+        'categories/category.html',
+        category=_category,
         articles=articles,
         now=datetime.now(),
         average_hotness=average_hotness(),
