@@ -45,6 +45,16 @@ def new_category(slug, title, description, session):
     return category
 
 
+@with_session
+def delete_category(category_id, session):
+    category = session.query(Category).get(category_id)
+    if not category:
+        return False
+
+    session.delete(category)
+    session.commit()
+    return True
+
 # --- User Utilities ---
 
 
