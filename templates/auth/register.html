@@ -3,13 +3,14 @@
 {% block title %}Регистрация — Лицейский портал{% endblock %}
 
 {% block content %}
-<div class="container mt-5 px-0" style="max-width: 1096px;">>
+<div class="container mt-5 px-0" style="max-width: 1096px;">
   <h2 class="mb-4 text-light">Регистрация</h2>
+
   <form method="POST" action="{{ url_for('auth.register') }}">
     {{ form.hidden_tag() }}
 
-    <div class="form-group">
-      <label class="form-label text-light mt-3">
+    <div class="form-group mt-3">
+      <label class="form-label text-light">
         {{ form.username.label.text }} <span class="text-danger">*</span>
       </label>
       {{ form.username(class="form-control bg-secondary text-light") }}
@@ -18,8 +19,8 @@
       {% endfor %}
     </div>
 
-    <div class="form-group">
-      <label class="form-label text-light mt-3">
+    <div class="form-group mt-3">
+      <label class="form-label text-light">
         {{ form.email.label.text }} <span class="text-danger">*</span>
       </label>
       {{ form.email(class="form-control bg-secondary text-light") }}
@@ -28,8 +29,8 @@
       {% endfor %}
     </div>
 
-    <div class="form-group">
-      <label class="form-label text-light mt-3">
+    <div class="form-group mt-3">
+      <label class="form-label text-light">
         {{ form.password.label.text }} <span class="text-danger">*</span>
       </label>
       {{ form.password(class="form-control bg-secondary text-light") }}
@@ -38,8 +39,8 @@
       {% endfor %}
     </div>
 
-    <div class="form-group">
-      <label class="form-label text-light mt-3">
+    <div class="form-group mt-3">
+      <label class="form-label text-light">
         {{ form.confirm.label.text }} <span class="text-danger">*</span>
       </label>
       {{ form.confirm(class="form-control bg-secondary text-light") }}
@@ -48,25 +49,25 @@
       {% endfor %}
     </div>
 
-    <div class="form-group text-light mt-3">
+    <div class="form-group mt-3 text-light">
       {{ form.first_name.label(class="form-label") }}
       {{ form.first_name(class="form-control bg-secondary text-light") }}
-      <a class="form-text text-secondary">Необязательно</a>
+      <small class="form-text text-secondary">Необязательно</small>
     </div>
 
-    <div class="form-group text-light mt-3">
+    <div class="form-group mt-3 text-light">
       {{ form.last_name.label(class="form-label") }}
       {{ form.last_name(class="form-control bg-secondary text-light") }}
-      <a class="form-text text-secondary">Необязательно</a>
+      <small class="form-text text-secondary">Необязательно</small>
     </div>
 
-    <div class="form-group text-light mt-3">
+    <div class="form-group mt-3 text-light">
       {{ form.pseudonym.label(class="form-label") }}
       {{ form.pseudonym(class="form-control bg-secondary text-light") }}
-      <a class="form-text text-secondary">Необязательно</a>
+      <small class="form-text text-secondary">Необязательно</small>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Зарегистрироваться</button>
+    <button type="submit" class="btn btn-primary mt-4">Зарегистрироваться</button>
   </form>
 </div>
 {% endblock %}

@@ -3,8 +3,9 @@
 {% block title %}Вход — Лицейский портал{% endblock %}
 
 {% block content %}
-<div class="container mt-5 px-0" style="max-width: 1096px;">>
+<div class="container mt-5 px-0" style="max-width: 1096px;">
   <h2 class="mb-4 text-light">Вход в аккаунт</h2>
+
   <form method="POST" action="{{ url_for('auth.login') }}">
     {{ form.hidden_tag() }}
 
@@ -18,8 +19,8 @@
       {% endfor %}
     </div>
 
-    <div class="form-group">
-      <label class="form-label text-light mt-3">
+    <div class="form-group mt-3">
+      <label class="form-label text-light">
         {{ form.password.label.text }} <span class="text-danger">*</span>
       </label>
       {{ form.password(class="form-control bg-secondary text-light") }}

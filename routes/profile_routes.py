@@ -8,16 +8,16 @@ profile_bp = Blueprint('profile', __name__)
 
 @profile_bp.route('/profile/<identifier>')
 def profile(identifier):
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(
-        User.id == int(identifier) if identifier.isdigit() else User.username == identifier
-    ).first()
-    db_sess.close()
+    with db_session.create_session() as db_sess:
+        user_query = User.id == int(identifier) if identifier.isdigit() else User.username == identifier
+        user = db_sess.query(User).filter(user_query).first()
+
     if not user:
         abort(404)
-    return render_template('profile/user.html',
-                           user=user,
-                           user_role_dict=config.user_role_dict,
-                           user_status_dict=config.user_status_dict)
 
-# TODO: Make profile edit
+    return render_template(
+        'profile/user.html',
+        user=user,
+        user_role_dict=config.user_role_dict,
+        user_status_dict=config.user_status_dict
+    )

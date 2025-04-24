@@ -11,34 +11,43 @@
       <h4 class="card-title">{{ user.username }}</h4>
 
       {% if user.profile_picture_url %}
-        <img src="{{ user.profile_picture_url }}" alt="Аватар" class="img-thumbnail mb-3" style="max-width: 200px;">
+        <img src="{{ user.profile_picture_url }}" alt="Аватар"
+             class="img-thumbnail mb-3" style="max-width: 200px;">
       {% endif %}
 
       {% if user.show_firstname and user.first_name %}
-      <p><strong>Имя:</strong> {{ user.first_name }}</p>
+        <p><strong>Имя:</strong> {{ user.first_name }}</p>
       {% endif %}
+
       {% if user.show_lastname and user.last_name %}
-      <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+        <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
       {% endif %}
+
       {% if user.show_pseudonym and user.pseudonym %}
-      <p><strong>Псевдоним:</strong> {{ user.pseudonym }}</p>
+        <p><strong>Псевдоним:</strong> {{ user.pseudonym }}</p>
       {% endif %}
+
       {% if user.show_email %}
-      <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
       {% endif %}
+
       <p><strong>Статус аккаунта:</strong> {{ user_status_dict.get(user.account_status) }}</p>
       <p><strong>Роль:</strong> {{ user_role_dict.get(user.role) }}</p>
-      {% if user.about_me not in ["", None] %}
-      <p><strong>О себе:</strong><br> {{ user.about_me }}</p>
+
+      {% if user.about_me %}
+        <p><strong>О себе:</strong><br>{{ user.about_me }}</p>
       {% endif %}
+
       {% if user.show_location and user.location %}
-      <p><strong>Локация:</strong> {{ user.location }}</p>
+        <p><strong>Локация:</strong> {{ user.location }}</p>
       {% endif %}
+
       {% if user.website_url %}
-      <p><strong>Веб-сайт:</strong>
+        <p><strong>Веб-сайт:</strong>
           <a href="{{ user.website_url }}" target="_blank">{{ user.website_url }}</a>
+        </p>
       {% endif %}
-      </p>
+
       <p><small class="text-secondary">Зарегистрирован: {{ user.created_date.strftime('%d.%m.%Y') }}</small></p>
     </div>
   </div>

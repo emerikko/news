@@ -7,9 +7,14 @@ from .comments_routes import comments_bp
 
 
 def register_blueprints(app):
-    app.register_blueprint(main_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(profile_bp)
-    app.register_blueprint(article_bp)
-    app.register_blueprint(error_bp)
-    app.register_blueprint(comments_bp)
+    blueprints = [
+        main_bp,
+        auth_bp,
+        profile_bp,
+        article_bp,
+        error_bp,
+        comments_bp,
+    ]
+
+    for bp in blueprints:
+        app.register_blueprint(bp)

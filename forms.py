@@ -1,15 +1,34 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
-from wtforms.fields.simple import TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+from wtforms import (
+    StringField, PasswordField, SubmitField,
+    BooleanField, SelectField, TextAreaField
+)
+from wtforms.validators import (
+    DataRequired, Email, EqualTo, Length, ValidationError
+)
+
 from data import db_session
 from data.categories import Category
+from data.articles import Article
 from config import article_type_dict, article_status_dict
 from utils import get_users_by_usernames
 
+# --- Utility Functions ---
 
-# --- Auth forms ---
+
+def get_category_choices():
+    db_sess = db_session.create_session()
+    return [(c.id, c.title) for c in db_sess.query(Category).all()]
+
+
+def validate_editors_input(self, field):
+    _, missing = get_users_by_usernames(field.data)
+    if missing:
+        raise ValidationError(f"Пользователи не найдены: {', '.join(missing)}")
+
+
+# --- Auth Forms ---
 
 
 class RegisterForm(FlaskForm):
@@ -21,7 +40,6 @@ class RegisterForm(FlaskForm):
     first_name = StringField('Имя')
     last_name = StringField('Фамилия')
     pseudonym = StringField('Псевдоним')
-
     submit = SubmitField('Зарегистрироваться')
 
 
@@ -31,18 +49,8 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
 
-# --- Article forms ---
 
-
-def validate_editors_input(self, field):
-    _, missing = get_users_by_usernames(field.data)
-    if missing:
-        raise ValidationError(f"Пользователи не найдены: {', '.join(missing)}")
-
-
-def category_choices():
-    db_sess = db_session.create_session()
-    return [(c.id, c.title) for c in db_sess.query(Category).all()]
+# --- Article Forms ---
 
 
 class ArticleCreateForm(FlaskForm):
@@ -54,13 +62,13 @@ class ArticleCreateForm(FlaskForm):
     submit = SubmitField("Создать")
 
     def __init__(self, *args, **kwargs):
-        super(ArticleCreateForm, self).__init__(*args, **kwargs)
-        self.category.choices = category_choices()
+        super().__init__(*args, **kwargs)
+        self.category.choices = get_category_choices()
 
 
 class ArticleEditForm(FlaskForm):
     title = StringField("Заголовок", validators=[DataRequired(), Length(min=1, max=255)])
-    subtitle = StringField("Подзаголовок", validators=[Length(min=0, max=255)])
+    subtitle = StringField("Подзаголовок", validators=[Length(max=255)])
     content = TextAreaField("Контент", validators=[DataRequired()])
     summary = TextAreaField("Сводка", validators=[DataRequired()])
     category_id = SelectField("Категория", coerce=int, validators=[DataRequired()])
@@ -72,27 +80,23 @@ class ArticleEditForm(FlaskForm):
     submit = SubmitField("Подтвердить")
 
     def __init__(self, *args, **kwargs):
-        from data import db_session
-        from data.categories import Category
-        from data.articles import Article
-
         article_id = kwargs.pop('article_id', None)
-        super(ArticleEditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         db_sess = db_session.create_session()
-        article = db_sess.query(Article).get(article_id)
+        self.category_id.choices = get_category_choices()
 
-        if article:
-            self.title.data = article.title
-            self.subtitle.data = article.subtitle
-            self.content.data = article.content
-            self.summary.data = article.summary
-            self.category_id.data = article.category_id
-            self.content_type.data = article.content_type
-            self.tags.data = article.tags
-            self.status.data = article.status
-
-        self.category_id.choices = [(c.id, c.title) for c in db_sess.query(Category).all()]
+        if article_id:
+            article = db_sess.query(Article).get(article_id)
+            if article:
+                self.title.data = article.title
+                self.subtitle.data = article.subtitle
+                self.content.data = article.content
+                self.summary.data = article.summary
+                self.category_id.data = article.category_id
+                self.content_type.data = article.content_type
+                self.tags.data = article.tags
+                self.status.data = article.status
 
 
 class ImageUploadForm(FlaskForm):

@@ -1,35 +1,41 @@
+import os
 from flask import Flask
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
+
 from data import db_session
 from data.users import User
-import os
-
-from routes import register_blueprints  # new import
-
-app = Flask(__name__, template_folder='templates')
-app.config['SECRET_KEY'] = 'meow_meow_meow'
-
-login_manager = LoginManager()
-login_manager.init_app(app)
+from routes import register_blueprints
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    user = db_sess.get(User, user_id)
-    db_sess.close()
-    return user
+def create_app():
+    app = Flask(__name__, template_folder='templates')
+    app.config['SECRET_KEY'] = 'meow_meow_meow'
 
+    login_manager = LoginManager()
+    login_manager.init_app(app)
 
-@app.context_processor
-def inject_user():
-    from flask_login import current_user
-    return dict(authorized_user=current_user)
+    # User loader for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        db_sess = db_session.create_session()
+        user = db_sess.get(User, user_id)
+        db_sess.close()
+        return user
+
+    # Make current_user available in all templates
+    @app.context_processor
+    def inject_user():
+        return dict(authorized_user=current_user)
+
+    # Register routes
+    register_blueprints(app)
+
+    return app
 
 
 def main():
     db_session.global_init("db/site.db")
-    register_blueprints(app)
+    app = create_app()
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 

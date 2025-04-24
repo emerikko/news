@@ -1,71 +1,66 @@
+import os
+import uuid
+from datetime import datetime
+
+from flask import current_app
+from werkzeug.utils import secure_filename
+from sqlalchemy import func
+
 import config
 from data import db_session
 from data.categories import Category
 from data.users import User
 from data.articles import Article
 from data.images import Image
-from datetime import datetime
-import os
-import uuid
-from werkzeug.utils import secure_filename
-from flask import current_app
+from data.comments import Comment
+from data.comment_votes import CommentVote
 
+
+# --- DB Setup ---
 db_session.global_init("db/site.db")
 
 
-def new_category(slug, title, description):
-    db_sess = db_session.create_session()
+# --- Utility Functions ---
+
+
+def with_session(func):
+    """Decorator to automatically manage session lifecycle."""
+    def wrapper(*args, **kwargs):
+        session = db_session.create_session()
+        try:
+            return func(*args, session=session, **kwargs)
+        finally:
+            session.close()
+    return wrapper
+
+
+# --- Category Utilities ---
+
+
+@with_session
+def new_category(slug, title, description, session):
     category = Category(slug=slug, title=title, description=description)
-    db_sess.add(category)
-    db_sess.commit()
-    db_sess.close()
+    session.add(category)
+    session.commit()
     return category
 
 
+# --- User Utilities ---
+
+
 def get_users_by_usernames(usernames, db_sess):
-    """Helper function to fetch users by their usernames."""
-    editors = []
-    missing_editors = []
+    editors, missing = [], []
 
-    for username in usernames:
-        user = db_sess.query(User).filter(User.username == username.strip()).first()
-        if user:
-            editors.append(user)
-        else:
-            missing_editors.append(username.strip())
+    for username in map(str.strip, usernames):
+        user = db_sess.query(User).filter_by(username=username).first()
+        (editors if user else missing).append(user or username)
 
-    return editors, missing_editors
+    return [e for e in editors if isinstance(e, User)], missing
 
 
-def hotness(article: Article):
-    if not article.published_date:
-        return 0
-    time_from_publish = (datetime.now() - article.published_date).total_seconds() // 60
-    activity_rating = (article.view_count * config.hotness_views_modifier
-                       + len(article.votes) * config.hotness_votes_modifier
-                       + len(article.comments) * config.hotness_comments_modifier)
-    return activity_rating / time_from_publish if time_from_publish > 0 else 0
-
-
-def average_hotness():
-    db_sess = db_session.create_session()
-    ans = 0
-    hots = [hotness(q) if q.status == 'published' else None for q in db_sess.query(Article).all()]
-    db_sess.close()
-    for i in hots:
-        if i:
-            ans += i
-    if len(hots) == 0:
-        return 0
-    return ans / (len(hots) - hots.count(None))
-
-
+@with_session
 def get_user_comment_karma(user_id, session):
     """Returns the total karma (sum of votes) for all comments authored by a user."""
-    from sqlalchemy import func
-    from data.comments import Comment
-    from data.comment_votes import CommentVote
-
     return (
         session.query(func.coalesce(func.sum(CommentVote.vote), 0))
         .join(Comment, CommentVote.comment_id == Comment.id)
@@ -74,21 +69,49 @@ def get_user_comment_karma(user_id, session):
     )
 
 
-# TODO: Add more useful/admin functions
+# --- Article Utilities ---
 
-def save_image(file, article_id):
-    upload_folder = os.path.join(current_app.static_folder, 'uploads')
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
-    
+
+def hotness(article: Article):
+    """Calculate the 'hotness' score of an article."""
+    if not article.published_date:
+        return 0
+
+    time_since_published = (datetime.now() - article.published_date).total_seconds()
+    if time_since_published <= 0:
+        return 0
+
+    activity_score = (
+        article.view_count * config.hotness_views_modifier +
+        len(article.votes) * config.hotness_votes_modifier +
+        len(article.comments) * config.hotness_comments_modifier
+    )
+    return activity_score / (time_since_published ** (1 / 7))
+
+
+@with_session
+def average_hotness(session):
+    """Average hotness of all published articles."""
+    articles = session.query(Article).filter_by(status='published').all()
+    scores = [hotness(article) for article in articles]
+    return sum(scores) / len(scores) if scores else 0
+
+
+# --- Image Utilities ---
+
+
+@with_session
+def save_image(file, article_id, session):
+    upload_dir = os.path.join(current_app.static_folder, 'uploads')
+    os.makedirs(upload_dir, exist_ok=True)
+
     original_filename = secure_filename(file.filename)
     filename = Image.generate_unique_filename(original_filename)
     slug = uuid.uuid4().hex
-    
-    file_path = os.path.join(upload_folder, filename)
+    file_path = os.path.join(upload_dir, filename)
+
     file.save(file_path)
-    
-    db_sess = db_session.create_session()
+
     image = Image(
         slug=slug,
         filename=filename,
@@ -97,49 +120,37 @@ def save_image(file, article_id):
         mime_type=file.content_type,
         article_id=article_id
     )
-    db_sess.add(image)
-    db_sess.commit()
-    
-    image_id = image.id
-    db_sess.close()
-    
-    db_sess = db_session.create_session()
-    image = db_sess.query(Image).get(image_id)
-    db_sess.close()
-    
-    return image
+    session.add(image)
+    session.commit()
+
+    return session.query(Image).get(image.id)
 
 
-def delete_image(image_id):
-    db_sess = db_session.create_session()
-    image = db_sess.query(Image).get(image_id)
-    
+@with_session
+def delete_image(image_id, session):
+    image = session.query(Image).get(image_id)
     if not image:
-        db_sess.close()
         return False
-    
+
     try:
         if os.path.exists(image.file_path):
             os.remove(image.file_path)
     except Exception as e:
         print(f"Error deleting file: {e}")
-    db_sess.delete(image)
-    db_sess.commit()
-    db_sess.close()
-    
+
+    session.delete(image)
+    session.commit()
     return True
 
-def set_featured_image(article_id, image_id):
-    db_sess = db_session.create_session()
-    article = db_sess.query(Article).get(article_id)
-    image = db_sess.query(Image).get(image_id)
-    
+
+@with_session
+def set_featured_image(article_id, image_id, session):
+    article = session.query(Article).get(article_id)
+    image = session.query(Image).get(image_id)
+
     if not article or not image or image.article_id != article_id:
-        db_sess.close()
         return False
-    
+
     article.featured_image_url = image.url
-    db_sess.commit()
-    db_sess.close()
-    
+    session.commit()
     return True
