@@ -6,7 +6,6 @@ html, body {
 html, body {
   display: flex;
   flex-direction: column;
-  background-color: #080808;
 }
 
 .navbar.bg-dark,
@@ -28,7 +27,8 @@ html, body {
 }
 
 main {
-  flex: 1;
+  flex-grow: 1;
+  background-color: #080808;
 }
 
 .rubik-mono-one-regular {
@@ -55,7 +55,6 @@ main {
 }
 
 .navbar {
-  height: 48px;
   min-height: 48px;
   padding-top: 0;
   padding-bottom: 0;
