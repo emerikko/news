@@ -33,11 +33,13 @@
         <button class="btn btn-sm btn-outline-light
         {% if article.get_user_vote(current_user.id) == 1 %}active{% endif %}" type="submit">👍</button>
       </form>
-      <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline">
-      <span class="mx-2 text-{% if article.get_user_vote(current_user.id) >= 1 %}success
-      {% elif article.get_user_vote(current_user.id) <= -1 %}danger
+      <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline"></form>
+        {% endif %}
+      <span class="mx-2 text-{% if article.vote_score >= 1 %}success
+      {% elif article.vote_score <= -1 %}danger
       {% else %}secondary
       {% endif %}">{{ article.vote_score }}</span>
+        {% if current_user.is_authenticated %}
       <form action="{{ url_for('article.vote_article', article_id=article.id) }}" method="post" class="d-inline">
         <input type="hidden" name="vote_type" value="downvote">
         <button class="btn btn-sm btn-outline-light
@@ -76,11 +78,13 @@
                 <button class="btn btn-sm btn-outline-light
                 {% if comment.get_user_vote(current_user.id) == 1 %}active{% endif %}" type="submit">👍</button>
               </form>
-              <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline">
-              <span class="mx-2 text-{% if comment.get_user_vote(current_user.id) >= 1 %}success
-              {% elif comment.get_user_vote(current_user.id) <= -1 %}danger
+              {% endif %}
+              <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline"></form>
+              <span class="mx-2 text-{% if comment.vote_score >= 1 %}success
+              {% elif comment.vote_score <= -1 %}danger
               {% else %}secondary
               {% endif %}">{{ comment.vote_score }}</span>
+              {% if current_user.is_authenticated %}
               <form action="{{ url_for('comments.vote_comment', comment_id=comment.id) }}" method="post" class="d-inline">
                 <input type="hidden" name="vote_type" value="downvote">
                 <button class="btn btn-sm btn-outline-light
