@@ -1,3 +1,5 @@
+[*клац*](https://emerikko.pythonanywhere.com)
+
 ## Как запустить?
 
 - Установить модули из requirements.txt с помощью pip install.
