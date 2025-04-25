@@ -9,18 +9,12 @@ from forms import NewCategoryForm
 admin_bp = Blueprint('admin', __name__)
 
 
-def admin_required(func):
-    def decorated_function(*args, **kwargs):
-        if not current_user.role == 'admin':
-            return redirect(url_for('main.index'))
-        return func(*args, **kwargs)
-    return decorated_function
-
-
 @admin_bp.route('/category/new', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def new_category():
+    if not current_user == 'admin':
+        return redirect(url_for('main.index'))
+
     form = NewCategoryForm()
 
     if form.validate_on_submit():
@@ -44,8 +38,10 @@ def new_category():
 
 @admin_bp.route('/category/<string:slug>/delete/', methods=['POST', 'GET'])
 @login_required
-@admin_required
 def delete_category(slug):
+    if not current_user.role == 'admin':
+        return redirect(url_for('main.index'))
+
     db_sess = db_session.create_session()
     category = db_sess.query(Category).filter_by(slug=slug).first()
     if category:
