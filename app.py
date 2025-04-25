@@ -14,7 +14,6 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
 
-    # User loader for Flask-Login
     @login_manager.user_loader
     def load_user(user_id):
         db_sess = db_session.create_session()
@@ -22,23 +21,18 @@ def create_app():
         db_sess.close()
         return user
 
-    # Make current_user available in all templates
     @app.context_processor
     def inject_user():
         return dict(authorized_user=current_user)
 
-    # Register routes
     register_blueprints(app)
-
     return app
 
 
-def main():
-    db_session.global_init("db/site.db")
-    app = create_app()
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+db_session.global_init("db/site.db")
+app = create_app()
 
 
 if __name__ == '__main__':
-    main()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
