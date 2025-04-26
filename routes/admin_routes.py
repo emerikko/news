@@ -12,7 +12,7 @@ admin_bp = Blueprint('admin', __name__)
 @admin_bp.route('/category/new', methods=['GET', 'POST'])
 @login_required
 def new_category():
-    if not current_user == 'admin':
+    if not current_user.role == 'admin':
         return redirect(url_for('main.index'))
 
     form = NewCategoryForm()
