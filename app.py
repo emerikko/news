@@ -8,6 +8,7 @@ from routes import register_blueprints
 
 
 def create_app():
+    """Create and configure the Flask application."""
     app = Flask(__name__, template_folder='templates')
     app.config['SECRET_KEY'] = 'meow_meow_meow'
 
@@ -16,6 +17,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
+        """Load user by ID for Flask-Login."""
         db_sess = db_session.create_session()
         user = db_sess.get(User, user_id)
         db_sess.close()
@@ -23,6 +25,7 @@ def create_app():
 
     @app.context_processor
     def inject_user():
+        """Inject current_user into all templates."""
         return dict(authorized_user=current_user)
 
     register_blueprints(app)

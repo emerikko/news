@@ -7,6 +7,8 @@ from .db_session import SqlAlchemyBase
 
 
 class User(SqlAlchemyBase, UserMixin):
+    """User model representing site users with various roles and permissions."""
+    
     __tablename__ = 'users'
 
     # --- Идентификация и аутентификация ---
@@ -16,16 +18,22 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     # --- Метаданные и статус аккаунта ---
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now(datetime.timezone.utc))
-    last_seen_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now(datetime.timezone.utc),
-                                       onupdate=datetime.datetime.now(datetime.timezone.utc))
+    created_date = sqlalchemy.Column(
+        sqlalchemy.DateTime, 
+        default=datetime.datetime.now(datetime.timezone.utc)
+    )
+    last_seen_date = sqlalchemy.Column(
+        sqlalchemy.DateTime, 
+        default=datetime.datetime.now(datetime.timezone.utc),
+        onupdate=datetime.datetime.now(datetime.timezone.utc)
+    )
     email_verified = sqlalchemy.Column(sqlalchemy.Boolean, default=False, nullable=False)
-    account_status = sqlalchemy.Column(sqlalchemy.String, default='pending', nullable=False, index=True)
     # Возможные статусы: active, pending, suspended, deleted
+    account_status = sqlalchemy.Column(sqlalchemy.String, default='pending', nullable=False, index=True)
 
     # --- Роль и права доступа ---
-    role = sqlalchemy.Column(sqlalchemy.String, default='user', nullable=False, index=True)
     # Возможные роли: admin, editor, author, moderator, user
+    role = sqlalchemy.Column(sqlalchemy.String, default='user', nullable=False, index=True)
 
     # --- Дополнительная информация профиля (опционально) ---
     about_me = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
@@ -51,7 +59,9 @@ class User(SqlAlchemyBase, UserMixin):
     show_gender = sqlalchemy.Column(sqlalchemy.Boolean, default=True, nullable=False)
 
     # --- Связи с другими моделями (ORM) ---
-    edited_articles = orm.relationship('Article', secondary='article_editors', back_populates='editors')
     # Связь с редактируемыми статьями
-    articles = orm.relationship("Article", back_populates="author")  # Связь со статьями пользователя
-    comments = orm.relationship("Comment", back_populates="author")  # Связь с комментариями пользователя
+    edited_articles = orm.relationship('Article', secondary='article_editors', back_populates='editors')
+    # Связь со статьями пользователя
+    articles = orm.relationship("Article", back_populates="author")
+    # Связь с комментариями пользователя
+    comments = orm.relationship("Comment", back_populates="author")

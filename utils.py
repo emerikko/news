@@ -24,7 +24,10 @@ db_session.global_init("db/site.db")
 
 
 def with_session(func):
-    """Decorator to automatically manage session lifecycle."""
+    """Decorator to automatically manage session lifecycle.
+    
+    Creates a session, passes it to the decorated function, and ensures it's closed afterward.
+    """
     def wrapper(*args, **kwargs):
         session = db_session.create_session()
         try:
@@ -39,6 +42,17 @@ def with_session(func):
 
 @with_session
 def new_category(slug, title, description, session):
+    """Create a new category.
+    
+    Args:
+        slug: URL-friendly identifier
+        title: Display name of the category
+        description: Detailed description
+        session: Database session (injected by decorator)
+        
+    Returns:
+        The created Category object
+    """
     category = Category(slug=slug, title=title, description=description)
     session.add(category)
     session.commit()
@@ -47,6 +61,15 @@ def new_category(slug, title, description, session):
 
 @with_session
 def delete_category(category_id, session):
+    """Delete a category by ID.
+    
+    Args:
+        category_id: ID of the category to delete
+        session: Database session (injected by decorator)
+        
+    Returns:
+        True if successful, False if category not found
+    """
     category = session.query(Category).get(category_id)
     if not category:
         return False
@@ -55,10 +78,20 @@ def delete_category(category_id, session):
     session.commit()
     return True
 
+
 # --- User Utilities ---
 
 
 def get_users_by_usernames(usernames, db_sess):
+    """Find users by their usernames.
+    
+    Args:
+        usernames: List or comma-separated string of usernames
+        db_sess: Database session
+        
+    Returns:
+        Tuple of (found_users, missing_usernames)
+    """
     editors, missing = [], []
 
     for username in map(str.strip, usernames):
@@ -70,7 +103,15 @@ def get_users_by_usernames(usernames, db_sess):
 
 @with_session
 def get_user_comment_karma(user_id, session):
-    """Returns the total karma (sum of votes) for all comments authored by a user."""
+    """Returns the total karma (sum of votes) for all comments authored by a user.
+    
+    Args:
+        user_id: ID of the user
+        session: Database session (injected by decorator)
+        
+    Returns:
+        Total karma score (integer)
+    """
     return (
         session.query(func.coalesce(func.sum(CommentVote.vote), 0))
         .join(Comment, CommentVote.comment_id == Comment.id)
@@ -83,7 +124,16 @@ def get_user_comment_karma(user_id, session):
 
 
 def hotness(article: Article):
-    """Calculate the 'hotness' score of an article."""
+    """Calculate the 'hotness' score of an article.
+    
+    The score is based on views, votes, comments, and time since publication.
+    
+    Args:
+        article: Article object
+        
+    Returns:
+        Hotness score as a float
+    """
     if not article.published_date:
         return 0
 
@@ -101,7 +151,14 @@ def hotness(article: Article):
 
 @with_session
 def average_hotness(session):
-    """Average hotness of all published articles."""
+    """Calculate average hotness of all published articles.
+    
+    Args:
+        session: Database session (injected by decorator)
+        
+    Returns:
+        Average hotness score as a float, or 0 if no articles
+    """
     articles = session.query(Article).filter_by(status='published').all()
     scores = [hotness(article) for article in articles]
     return sum(scores) / len(scores) if scores else 0
@@ -112,6 +169,16 @@ def average_hotness(session):
 
 @with_session
 def save_image(file, article_id, session):
+    """Save an uploaded image file and associate it with an article.
+    
+    Args:
+        file: Uploaded file object
+        article_id: ID of the article to associate with
+        session: Database session (injected by decorator)
+        
+    Returns:
+        The created Image object
+    """
     upload_dir = os.path.join(current_app.static_folder, 'uploads')
     os.makedirs(upload_dir, exist_ok=True)
 
@@ -138,6 +205,15 @@ def save_image(file, article_id, session):
 
 @with_session
 def delete_image(image_id, session):
+    """Delete an image by ID, removing both database record and file.
+    
+    Args:
+        image_id: ID of the image to delete
+        session: Database session (injected by decorator)
+        
+    Returns:
+        True if successful, False if image not found
+    """
     image = session.query(Image).get(image_id)
     if not image:
         return False
@@ -155,6 +231,16 @@ def delete_image(image_id, session):
 
 @with_session
 def set_featured_image(article_id, image_id, session):
+    """Set an image as the featured image for an article.
+    
+    Args:
+        article_id: ID of the article
+        image_id: ID of the image to set as featured
+        session: Database session (injected by decorator)
+        
+    Returns:
+        True if successful, False if article or image not found or not associated
+    """
     article = session.query(Article).get(article_id)
     image = session.query(Image).get(image_id)
 

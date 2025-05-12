@@ -21,3 +21,8 @@ def profile(identifier):
         user_role_dict=config.user_role_dict,
         user_status_dict=config.user_status_dict
     )
+
+
+@profile_bp.route('/profile/<identifier>')
+def edit_profile(user_id):
+    pass

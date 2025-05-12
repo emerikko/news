@@ -12,12 +12,15 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
+    """Render the homepage with all published articles."""
     db_sess = db_session.create_session()
     categories = db_sess.query(Category).all()
-    articles = (db_sess.query(Article)
-                .filter_by(status='published')
-                .order_by(Article.created_date.desc())
-                .all())
+    articles = (
+        db_sess.query(Article)
+        .filter_by(status='published')
+        .order_by(Article.created_date.desc())
+        .all()
+    )
 
     return render_template(
         'user/index.html',
@@ -33,16 +36,19 @@ def index():
 
 @main_bp.route('/category/<slug>')
 def category(slug):
+    """Render a category page with all published articles in that category."""
     db_sess = db_session.create_session()
     _category = db_sess.query(Category).filter_by(slug=slug).first()
     if not _category:
         db_sess.close()
         abort(404)
 
-    articles = (db_sess.query(Article)
-                .filter_by(category_id=_category.id, status='published')
-                .order_by(Article.created_date.desc())
-                .all())
+    articles = (
+        db_sess.query(Article)
+        .filter_by(category_id=_category.id, status='published')
+        .order_by(Article.created_date.desc())
+        .all()
+    )
 
     return render_template(
         'categories/category.html',
